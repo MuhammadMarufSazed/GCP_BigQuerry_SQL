@@ -1,0 +1,16 @@
+SELECT 
+  trips.trip_id, 
+  trips.subscriber_type, 
+  trips.start_time, 
+  trips.start_station_name, 
+  trips.end_station_name,  
+  trips.duration_minutes,
+  s.latitude AS start_latitude,
+  s.longitude AS start_longitude,
+  e.latitude AS end_latitude,
+  e.longitude AS end_longitude
+FROM `bigquery-public-data.austin_bikeshare.bikeshare_trips` AS trips
+LEFT JOIN `bigquery-public-data.austin_bikeshare.bikeshare_stations` AS s
+ON trips.start_station_id = s.station_id
+LEFT JOIN `bigquery-public-data.austin_bikeshare.bikeshare_stations` AS e
+ON trips.end_station_id = CAST(e.station_id AS STRING)
