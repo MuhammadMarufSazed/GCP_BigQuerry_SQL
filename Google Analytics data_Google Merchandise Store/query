@@ -1,0 +1,67 @@
+# Querying for daily information
+SELECT
+    date,
+    SUM(totals. visits) AS total_visits,
+    SUM(totals. bounces) AS total_bounces,
+    (SUM(totals. bounces)/SUM(totals. visits)) AS bounce_per_visit,
+    (SUM(totals.transactions)) AS total_transaction,
+    (SUM(totals. transactionRevenue)) AS revenue
+    
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_*`
+WHERE  
+    _TABLE_SUFFIX BETWEEN '20160801' AND '20170731'
+GROUP BY date
+ORDER BY date ASC
+
+# Querying for information in each visit
+SELECT 
+    visitId,
+    SUM(totals.transactionRevenue) AS transaction_during_visit,
+    SUM(totals.timeOnSite) AS time_during_visit,
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_*`
+WHERE  
+    _TABLE_SUFFIX BETWEEN '20160801' AND '20170731' 
+    AND totals.transactionRevenue IS NOT NULL
+GROUP BY visitId
+
+# Querying for browser information
+SELECT
+    DISTINCT(device. browser) AS  browser,
+    COUNT(device. browser) count_browser,
+    SUM(totals. transactions) AS transactions,
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_*`
+WHERE  
+    _TABLE_SUFFIX BETWEEN '20160801' AND '20170731'
+GROUP BY browser
+ORDER BY count_browser DESC 
+
+
+# Querying for traffic source information
+SELECT 
+    DISTINCT(trafficSource. source) AS traffic_source,
+    COUNT(trafficSource. source) AS count_per_source,
+    SUM(totals. transactions) AS transactions,
+    SUM(totals. transactionRevenue) AS revenue,
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_*`
+WHERE  
+    _TABLE_SUFFIX BETWEEN '20160801' AND '20170731'
+GROUP BY traffic_source
+ORDER BY count_per_source DESC 
+
+
+
+# Querying for country information
+SELECT    
+    geoNetwork.country AS country,
+    SUM(totals. Visits) AS visits,
+    SUM(totals. bounces) AS bounces,
+    SUM(totals. transactions) AS transactions,
+    SUM(totals. totalTransactionRevenue) AS revenue,
+    SUM(totals. screenviews) AS screenviews,
+    SUM(totals. timeOnScreen) AS time,
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_*`
+WHERE  
+    _TABLE_SUFFIX BETWEEN '20160801' AND '20170731'
+GROUP BY country
+ORDER BY visits DESC 
+
