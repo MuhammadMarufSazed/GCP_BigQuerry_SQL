@@ -4,11 +4,14 @@ WHERE country = 'United States'
   AND oper_status = 'Operational'
   AND airport_use != 'Private'
 
+
 # Query for private airports
 SELECT * FROM `bigquery-public-data.faa.us_airports`
 WHERE country = 'United States' 
   AND oper_status = 'Operational'
   AND airport_use = 'Private'
+
+
 # Querying for table with state name, number of public and private airports in each state.
 WITH private AS 
   (SELECT 
@@ -37,7 +40,9 @@ WITH private AS
   FROM private
   LEFT JOIN public
   ON private.state = public.state
-  # Count of different types of airport
+ 
+
+# Count of different types of airport
 SELECT 
   airport_type,
   COUNT(name) AS number
