@@ -1,0 +1,49 @@
+# Query for public airports
+SELECT * FROM `bigquery-public-data.faa.us_airports`
+WHERE country = 'United States' 
+  AND oper_status = 'Operational'
+  AND airport_use != 'Private'
+
+# Query for private airports
+SELECT * FROM `bigquery-public-data.faa.us_airports`
+WHERE country = 'United States' 
+  AND oper_status = 'Operational'
+  AND airport_use = 'Private'
+# Querying for table with state name, number of public and private airports in each state.
+WITH private AS 
+  (SELECT 
+    state_abbreviation AS state,
+    COUNT(name) AS number
+  FROM `bigquery-public-data.faa.us_airports`
+  WHERE country = 'United States' 
+    AND oper_status = 'Operational'
+    AND airport_use = 'Private'
+  GROUP BY state_abbreviation
+  ORDER BY state_abbreviation DESC),
+  public AS 
+  (SELECT 
+    state_abbreviation AS state,
+    COUNT(name) AS number
+  FROM `bigquery-public-data.faa.us_airports`
+  WHERE country = 'United States' 
+    AND oper_status = 'Operational'
+    AND airport_use != 'Private'
+  GROUP BY state_abbreviation
+  ORDER BY state_abbreviation DESC)
+  SELECT 
+    private.state AS state, 
+    private.number AS private_airports, 
+    public.number AS public_airports
+  FROM private
+  LEFT JOIN public
+  ON private.state = public.state
+  # Count of different types of airport
+SELECT 
+  airport_type,
+  COUNT(name) AS number
+FROM `bigquery-public-data.faa.us_airports`
+  WHERE country = 'United States' 
+        AND oper_status = 'Operational'
+GROUP BY airport_type
+ORDER BY number DESC
+
